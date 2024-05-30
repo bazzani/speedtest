@@ -15,11 +15,11 @@ run_speedtest() {
   # Start speed test
   echo "Running a Speed Test..."
   JSON=$(speedtest --accept-license --accept-gdpr -f json)
-  DOWNLOAD="$(echo $JSON | jq -r '.download.bandwidth')"
-  UPLOAD="$(echo $JSON | jq -r '.upload.bandwidth')"
-  PING="$(echo $JSON | jq -r '.ping.latency')"
-  echo "Your download speed is $(($DOWNLOAD / 125000)) Mbps ($DOWNLOAD Bytes/s)."
-  echo "Your upload speed is $(($UPLOAD / 125000)) Mbps ($UPLOAD Bytes/s)."
+  DOWNLOAD="$(echo "$JSON" | jq -r '.download.bandwidth')"
+  UPLOAD="$(echo "$JSON" | jq -r '.upload.bandwidth')"
+  PING="$(echo "$JSON" | jq -r '.ping.latency')"
+  echo "Your download speed is $((DOWNLOAD / 125000)) Mbps ($DOWNLOAD Bytes/s)."
+  echo "Your upload speed is $((UPLOAD / 125000)) Mbps ($UPLOAD Bytes/s)."
   echo "Your ping is $PING ms."
 
   # Save results in the database
@@ -40,7 +40,7 @@ if $LOOP; then
     run_speedtest
     echo "Running next test in ${LOOP_DELAY}s..."
     echo ""
-    sleep $LOOP_DELAY
+    sleep "$LOOP_DELAY"
   done
 else
   run_speedtest
