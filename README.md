@@ -36,13 +36,13 @@ Your ping is 6.223 ms.
 For a full visualization and long term tracking, I recommend InfluxDB as a time-series database and Grafana as a dashboard engine. Both come in Docker containers, so the whole setup can be achieved by starting a Docker Compose file.
 
 ```yaml
-version: "3"
+name: speedtest-demo
 services:
   grafana:
     image: grafana/grafana:7.5.2
     restart: always
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
       - grafana:/var/lib/grafana
     depends_on:
@@ -54,15 +54,17 @@ services:
     volumes:
       - influxdb:/var/lib/influxdb
     ports:
-      - 8083:8083
-      - 8086:8086
+      - "8083:8083"
+      - "8086:8086"
     environment:
       - INFLUXDB_ADMIN_USER="admin"
       - INFLUXDB_ADMIN_PASSWORD="password"
       - INFLUXDB_DB="speedtest"
 
   speedtest:
-    image: robinmanuelthiel/speedtest:latest
+    build:
+      context: ..
+      dockerfile: Dockerfile
     restart: always
     environment:
       - LOOP=true

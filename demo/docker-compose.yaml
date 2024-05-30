@@ -1,4 +1,4 @@
-version: "3"
+name: speedtest-demo
 services:
   grafana:
     image: grafana/grafana:7.5.2
@@ -24,7 +24,9 @@ services:
       - INFLUXDB_DB="speedtest"
 
   speedtest:
-    image: robinmanuelthiel/speedtest:latest
+    build:
+      context: ..
+      dockerfile: Dockerfile
     restart: always
     environment:
       - LOOP=true
