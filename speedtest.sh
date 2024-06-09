@@ -1,5 +1,7 @@
 #!/bin/sh
+
 # These values can be overwritten with env variables
+SHOW_SERVERS="${SHOW_SERVERS:-false}"
 LOOP="${LOOP:-false}"
 LOOP_DELAY="${LOOP_DELAY:-60}"
 DB_SAVE="${DB_SAVE:-false}"
@@ -20,10 +22,12 @@ run_speedtest() {
     JSON=$(speedtest --accept-license --accept-gdpr -f json)
   else # todo add else if, or make 1st if the final else
     echo "Running a Speed Test with server flags [$1]... "
-    JSON=$(speedtest --accept-license --accept-gdpr -f json "$1")
+#    JSON=$(speedtest --accept-license --accept-gdpr -f json -o "$1")
+    JSON=$(speedtest --accept-license --accept-gdpr -f json -s "$1")
   fi
 
-  if jq -e . >/dev/null 2>&1 <<<"$JSON"; then
+  json_result_found="$(jq -e 'select(.type == "result")')"
+  if [ -n "${json_result_found}" ]; then
     DOWNLOAD="$(echo "$JSON" | jq -r '.download.bandwidth')"
     UPLOAD="$(echo "$JSON" | jq -r '.upload.bandwidth')"
     PING="$(echo "$JSON" | jq -r '.ping.latency')"
@@ -49,40 +53,56 @@ run_speedtest() {
   fi
 }
 
+get_server_flags() {
+#  echo >&2 "get_server_flags..."
+#  echo >&2 "SPEEDTEST_SERVER_ID: $([ -n "$SPEEDTEST_SERVER_ID" ])"
+#  echo >&2 "SPEEDTEST_HOSTNAME: $([ -n "$SPEEDTEST_HOSTNAME" ])"
+
+## todo figure out which flags have been passed in here, return non-zero if multiple server flags passed in
+
+  if [ -n "$SPEEDTEST_SERVER_ID" ] && [ -n "$SPEEDTEST_HOSTNAME" ]; then
+    echo >&2 "[error] Only one server selection can be specified, please use one of ['SPEEDTEST_SERVER_ID' or 'SPEEDTEST_HOSTNAME']"
+    exit 1 # todo throw error
+  elif [ -n "$SPEEDTEST_HOSTNAME" ]; then
+#    echo "-o $SPEEDTEST_HOSTNAME"
+    echo "$SPEEDTEST_HOSTNAME"
+  elif [ -n "$SPEEDTEST_SERVER_ID" ]; then
+#    echo "-s $SPEEDTEST_SERVER_ID"
+    echo "$SPEEDTEST_SERVER_ID"
+  else
+    echo >&2 "No Server flags being set"
+  fi
+}
+
 call_speedtest_with_args() {
-  if [ -z "$1" ]; then
+  #  set -e
+  server_flags=$(get_server_flags)
+
+  if [ -z "$server_flags" ]; then
+    #  if [ -z "$1" ]; then
     run_speedtest
   else
-    run_speedtest "$1"
+    #    echo "run_speedtest with [ $1 ]"
+    #    run_speedtest "$1"
+    echo "run_speedtest with [ $server_flags ]"
+    run_speedtest "$server_flags"
   fi
 }
 
-get_server_flags() {
-  if [ -z $SPEEDTEST_HOSTNAME ] && [ -z "$SPEEDTEST_SERVER_ID" ]; then
-    echo "[error] Only one server selection can be specified, please use one of ["'$SPEEDTEST_HOSTNAME' or 'SPEEDTEST_SERVER_ID'"]"
-    # todo throw error
-  elif [ -z $SPEEDTEST_HOSTNAME ]; then
-    return "-o $SPEEDTEST_HOSTNAME"
-  elif [ -z $SPEEDTEST_SERVER_ID ]; then
-    return "-s $SPEEDTEST_SERVER_ID"
-  else
-    return null
-  fi
-}
-
-# todo figure out which flags have been passed in here, return non-zero if multiple server flags passed in
-def server_flags = get_server_flags
+if $SHOW_SERVERS; then
+  speedtest --accept-license --accept-gdpr -L
+fi
 
 if $LOOP; then
   echo "Running speedtest forever... ♾️"
   echo
   while :; do
-    call_speedtest_with_args server_flags
+    call_speedtest_with_args
     echo ""
     echo "Running next test in ${LOOP_DELAY} seconds..."
     echo ""
     sleep "$LOOP_DELAY"
   done
 else
-  call_speedtest_with_args server_flags
+  call_speedtest_with_args
 fi
