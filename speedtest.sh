@@ -18,9 +18,9 @@ run_speedtest() {
   if [ -z "$1" ]; then
     echo "Running a Speed Test with default host... "
     JSON=$(speedtest --accept-license --accept-gdpr -f json)
-  else
-    echo "Running a Speed Test with host [$1]... "
-    JSON=$(speedtest --accept-license --accept-gdpr -f json -o "$1")
+  else # todo add else if, or make 1st if the final else
+    echo "Running a Speed Test with server flags [$1]... "
+    JSON=$(speedtest --accept-license --accept-gdpr -f json "$1")
   fi
 
   if jq -e . >/dev/null 2>&1 <<<"$JSON"; then
@@ -57,16 +57,32 @@ call_speedtest_with_args() {
   fi
 }
 
+get_server_flags() {
+  if [ -z $SPEEDTEST_HOSTNAME ] && [ -z "$SPEEDTEST_SERVER_ID" ]; then
+    echo "[error] Only one server selection can be specified, please use one of ["'$SPEEDTEST_HOSTNAME' or 'SPEEDTEST_SERVER_ID'"]"
+    # todo throw error
+  elif [ -z $SPEEDTEST_HOSTNAME ]; then
+    return "-o $SPEEDTEST_HOSTNAME"
+  elif [ -z $SPEEDTEST_SERVER_ID ]; then
+    return "-s $SPEEDTEST_SERVER_ID"
+  else
+    return null
+  fi
+}
+
+# todo figure out which flags have been passed in here, return non-zero if multiple server flags passed in
+def server_flags = get_server_flags
+
 if $LOOP; then
   echo "Running speedtest forever... ♾️"
   echo
   while :; do
-    call_speedtest_with_args "$SPEEDTEST_HOSTNAME"
+    call_speedtest_with_args server_flags
     echo ""
     echo "Running next test in ${LOOP_DELAY} seconds..."
     echo ""
     sleep "$LOOP_DELAY"
   done
 else
-  call_speedtest_with_args "$SPEEDTEST_HOSTNAME"
+  call_speedtest_with_args server_flags
 fi
