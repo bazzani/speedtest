@@ -19,17 +19,17 @@ Your ping is 6.223 ms.
 
 ## Configuration
 
-| Environment variable  | Default value           | Description                        |
-|-----------------------|-------------------------|------------------------------------|
-| `SPEEDTEST_HOSTNAME`  | none                    | Host name to run speedtest against |
-| `SPEEDTEST_SERVER_ID` | none                    | Server ID to run speedtest against |
-| `LOOP`                | `false`                 | Run Speedtest in a loop            |
-| `LOOP_DELAY`          | `60`                    | Delay in seconds between the runs  |
-| `DB_SAVE`             | `false`                 | Save values to InfluxDB            |
-| `DB_HOST`             | `http://localhost:8086` | InfluxDB Hostname                  |
-| `DB_NAME`             | `speedtest`             | InfluxDB Database name             |
-| `DB_USERNAME`         | `admin`                 | InfluxDB Username                  |
-| `DB_PASSWORD`         | `password`              | InfluxDB Password                  |
+| Environment variable  | Default value           | Description                                                |
+|-----------------------|-------------------------|------------------------------------------------------------|
+| `SPEEDTEST_SERVER_ID` | none                    | Server ID from the Speedtest server list                   |
+| `SPEEDTEST_HOST`      | none                    | Fully qualified domain name from the Speedtest server list |
+| `LOOP`                | `false`                 | Run Speedtest in a loop                                    |
+| `LOOP_DELAY`          | `60`                    | Delay in seconds between the runs                          |
+| `DB_SAVE`             | `false`                 | Save values to InfluxDB                                    |
+| `DB_HOST`             | `http://localhost:8086` | InfluxDB Hostname                                          |
+| `DB_NAME`             | `speedtest`             | InfluxDB Database name                                     |
+| `DB_USERNAME`         | `admin`                 | InfluxDB Username                                          |
+| `DB_PASSWORD`         | `password`              | InfluxDB Password                                          |
 
 ## Grafana and InfluxDB
 
