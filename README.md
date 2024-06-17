@@ -21,8 +21,6 @@ Your ping is 6.223 ms.
 
 | Environment variable  | Default value           | Description                                                |
 |-----------------------|-------------------------|------------------------------------------------------------|
-| `SPEEDTEST_SERVER_ID` | none                    | Server ID from the Speedtest server list                   |
-| `SPEEDTEST_HOST`      | none                    | Fully qualified domain name from the Speedtest server list |
 | `LOOP`                | `false`                 | Run Speedtest in a loop                                    |
 | `LOOP_DELAY`          | `60`                    | Delay in seconds between the runs                          |
 | `DB_SAVE`             | `false`                 | Save values to InfluxDB                                    |
@@ -30,6 +28,8 @@ Your ping is 6.223 ms.
 | `DB_NAME`             | `speedtest`             | InfluxDB Database name                                     |
 | `DB_USERNAME`         | `admin`                 | InfluxDB Username                                          |
 | `DB_PASSWORD`         | `password`              | InfluxDB Password                                          |
+| `SPEEDTEST_SERVER_ID` | none                    | Server ID from the Speedtest server list                   |
+| `SPEEDTEST_HOST`      | none                    | Fully qualified domain name from the Speedtest server list |
 
 ## Grafana and InfluxDB
 
